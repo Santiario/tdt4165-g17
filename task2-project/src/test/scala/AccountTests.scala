@@ -132,7 +132,6 @@ class AccountTransferTests extends FunSuite {
 
   }
 
-
   test("Test 11: Correct balance amounts after several transfers") {
     val bank = new Bank()
 
@@ -158,6 +157,7 @@ class AccountTransferTests extends FunSuite {
     assert((acc1.getBalanceAmount == 2300) && (acc2.getBalanceAmount == 5700))
 
   }
+/*
 
   test("Test 12: Failed transactions should retry and potentially succeed with multiple allowed attempts") {
     var failed = 0
@@ -203,5 +203,5 @@ class AccountTransferTests extends FunSuite {
     }
     assert(failed <= 5)
   }
-
+*/
 }
