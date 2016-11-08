@@ -6,6 +6,7 @@ import scala.concurrent.forkjoin.ForkJoinPool
 
 class Bank(val allowedAttempts: Integer = 3) {
 
+
   private val uid: AtomicInteger = new AtomicInteger()
   val transactionsQueue: TransactionQueue = new TransactionQueue()
   private val processedTransactions: TransactionQueue = new TransactionQueue()

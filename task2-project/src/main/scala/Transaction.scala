@@ -70,19 +70,22 @@ class Transaction(val transactionsQueue: TransactionQueue,
         status = TransactionStatus.SUCCESS
         processedTransactions push this
       } catch {
-        case e: Throwable => {
-          if (attempts == allowedAttemps) {
-            println("--> FAILED: " + e)
-            println("--> --> attempts: " + attempts)
-            println("--> --> allowedAttemps: " + allowedAttemps)
-            status = TransactionStatus.FAILED
-            processedTransactions push this
-          } else {
-            attempts += 1
-            transactionsQueue push this
-          }
+        case iae: IllegalAmountException => {
+
+        attempts += 1
+        this.status = TransactionStatus.FAILED
+        processedTransactions.push(this)
+      }
+      case nsfe: NoSufficientFundsException => {
+        attempts += 1
+        if (attempts < allowedAttemps) {
+          transactionsQueue.push(this)}
+        else {
+          this.status = TransactionStatus.FAILED
+          processedTransactions.push(this)
         }
       }
+    }
   }
 
 }
