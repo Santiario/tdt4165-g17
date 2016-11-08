@@ -10,29 +10,29 @@ class TransactionQueue {
   private var queue: Array[Transaction] = Array()
 
   // Remove and return the first element from the queue
-  def pop: Transaction = {
+  def pop: Transaction = synchronized {
     val element = queue(0)
     queue = queue.slice(1, queue.length)
     return element
   }
 
   // Return whether the queue is empty
-  def isEmpty: Boolean = {
+  def isEmpty: Boolean = synchronized {
     return queue.length == 0
   }
 
   // Add new element to the back of the queue
-  def push(t: Transaction): Unit = {
-    queue = queue :+ t
+  def push(t: Transaction): Unit = synchronized {
+    queue = t +: queue
   }
 
   // Return the first element from the queue without removing it
-  def peek: Transaction = {
+  def peek: Transaction = synchronized {
     queue(0)
   }
 
   // Return an iterator to allow you to iterate over the queue
-  def iterator: Iterator[Transaction] = {
+  def iterator: Iterator[Transaction] = synchronized {
     queue.toIterator
   }
 }
@@ -46,16 +46,15 @@ class Transaction(val transactionsQueue: TransactionQueue,
 
   var status: TransactionStatus.Value = TransactionStatus.PENDING
 
-  override def run: Unit = {
+  var attempts: Int = 0
 
-    var attempts: Int = 0
+  override def run: Unit = {
 
     def doTransaction() = {
       from withdraw amount
       to deposit amount
     }
 
-    def executeTransaction: Unit = {
       try {
         if (from.uid < to.uid) from synchronized {
           to synchronized {
@@ -71,19 +70,19 @@ class Transaction(val transactionsQueue: TransactionQueue,
         status = TransactionStatus.SUCCESS
         processedTransactions push this
       } catch {
-        case _: Throwable => {
+        case e: Throwable => {
           if (attempts == allowedAttemps) {
+            println("--> FAILED: " + e)
+            println("--> --> attempts: " + attempts)
+            println("--> --> allowedAttemps: " + allowedAttemps)
             status = TransactionStatus.FAILED
             processedTransactions push this
           } else {
             attempts += 1
-            executeTransaction
+            transactionsQueue push this
           }
         }
       }
-    }
-
-    executeTransaction
   }
 
 }
