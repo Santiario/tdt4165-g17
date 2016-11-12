@@ -39,14 +39,25 @@ class Bank(val bankId: String) extends Actor {
   }
 
   override def receive = {
-    case CreateAccountRequest(initialBalance) => ??? // Create a new account
-    case GetAccountRequest(id) => ??? // Return account
+    case CreateAccountRequest(initialBalance) => sender ! createAccount(initialBalance) // Create a new account
+    case GetAccountRequest(id) => {
+      findAccount(id) match {
+        case Some(a) => sender ! a
+        case None => println("receive: No internal account found.")
+      }
+    } // Return account
     case IdentifyActor => sender ! this
     case t: Transaction => processTransaction(t)
 
     case t: TransactionRequestReceipt => {
       // Forward receipt
-      ???
+      findAccount(t.toAccountNumber) match {
+        case Some(a) => a ! t // Internal
+        case None => findOtherBank(t.transaction.from.substring(0, 4)) match {
+          case Some(b) => b ! t
+          case None => println("receive: No other bank found.")
+        } // External
+      }
     }
 
     case msg => ???
@@ -73,4 +84,5 @@ class Bank(val bankId: String) extends Actor {
       }
     }
   }
+
 }

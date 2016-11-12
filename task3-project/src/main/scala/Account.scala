@@ -85,7 +85,6 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
     }
 
     t
-
   }
 
   def reserveTransaction(t: Transaction): Boolean = {
