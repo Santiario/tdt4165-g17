@@ -17,17 +17,25 @@ class Bank(val bankId: String) extends Actor {
 
   def createAccount(initialBalance: Double): ActorRef = {
     // Should create a new Account Actor and return its actor reference. Accounts should be assigned with unique ids (increment with 1).
-    ???
+    return BankManager.createAccount(accountCounter.incrementAndGet().toString, bankId, initialBalance)
   }
 
   def findAccount(accountId: String): Option[ActorRef] = {
     // Use BankManager to look up an account with ID accountId
-    ???
+    try { 
+      return Some(BankManager.findAccount(bankId, accountId))
+    } catch {
+      case _: NoSuchElementException => None
+    }
   }
 
   def findOtherBank(bankId: String): Option[ActorRef] = {
     // Use BankManager to look up a different bank with ID bankId
-    ???
+    try { 
+      return Some(BankManager.findBank(bankId))
+    } catch {
+      case _: NoSuchElementException => None
+    }
   }
 
   override def receive = {
@@ -53,6 +61,16 @@ class Bank(val bankId: String) extends Actor {
     
     // This method should forward Transaction t to an account or another bank, depending on the "to"-address.
     // HINT: Make use of the variables that have been defined above.
-    ???
+    if (isInternal) {
+      findAccount(toAccountId) match {
+        case Some(a) => a ! t
+        case None => println("processTransaction: No internal account found.")
+      }
+    } else {
+      findOtherBank(toBankId) match {
+        case Some(b) => b ! t
+        case None => println("processTransaction: No other bank found.")
+      }
+    }
   }
 }

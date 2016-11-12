@@ -24,29 +24,35 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
 
   def getTransactions: List[Transaction] = {
     // Should return a list of all Transaction-objects stored in transactions
-    ???
+    return transactions.values.toList
   }
 
   def allTransactionsCompleted: Boolean = {
     // Should return whether all Transaction-objects in transactions are completed
-    ???
+    for (transaction <- getTransactions) {
+      if (!(transaction.isCompleted)) {
+        return false
+      }
+    }
+
+    return true
   }
 
   def withdraw(amount: Double): Unit = synchronized {
-    if(!isPositive(amount)) {
+    if (!isPositive(amount)) {
       throw new IllegalAmountException();
-    } else if (this.balance < amount) {
+    } else if (this.balance.amount < amount) {
       throw new NoSufficientFundsException();
     } else {
-      this.balance -= amount
+      this.balance.amount -= amount
     }
   }
 
   def deposit(amount: Double): Unit = synchronized {
-    if(!isPositive(amount)) {
+    if (!isPositive(amount)) {
       throw new IllegalAmountException();
     } else {
-      this.balance += amount;
+      this.balance.amount += amount;
     }
   }
 
@@ -60,7 +66,7 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
 
   def sendTransactionToBank(t: Transaction): Unit = {
     // Should send a message containing t to the bank of this account
-    ???
+    BankManager.findBank(bankId) ! t
   }
 
   def transferTo(accountNumber: String, amount: Double): Transaction = {
