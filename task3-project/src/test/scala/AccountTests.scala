@@ -82,23 +82,23 @@ class Test03 extends FunSuite {
   }
 }
 
-// class Test04 extends FunSuite {
+class Test04 extends FunSuite {
 
-//   test("Valid transaction between two different banks, accounts should have correct balance.") {
-//     val (bank1Ref, bank1): (ActorRef, Bank) = TestHelper.createBank("2010")
-//     val (bank2Ref, bank2): (ActorRef, Bank) = TestHelper.createBank("2011")
+  test("Valid transaction between two different banks, accounts should have correct balance.") {
+    val (bank1Ref, bank1): (ActorRef, Bank) = TestHelper.createBank("2010")
+    val (bank2Ref, bank2): (ActorRef, Bank) = TestHelper.createBank("2011")
 
-//     val (accountRef1, account1) = TestHelper.createBankAccount("2010", 1000)
-//     val (accountRef2, account2) = TestHelper.createBankAccount("2011", 1000)
+    val (accountRef1, account1) = TestHelper.createBankAccount("2010", 1000)
+    val (accountRef2, account2) = TestHelper.createBankAccount("2011", 1000)
 
-//     implicit val timeout = Timeout(5 seconds)
+    implicit val timeout = Timeout(5 seconds)
 
-//     account1.transferTo(account2.getFullAddress, 200)
-//     TestHelper.waitUntilAllTransactionsAreCompleted(List(account1, account2))
-//     assert(account1.getBalanceAmount == 800 && account2.getBalanceAmount == 1200)
+    account1.transferTo(account2.getFullAddress, 200)
+    TestHelper.waitUntilAllTransactionsAreCompleted(List(account1, account2))
+    assert(account1.getBalanceAmount == 800 && account2.getBalanceAmount == 1200)
 
-//   }
-// }
+  }
+}
 
 
 // class Test05 extends FunSuite {

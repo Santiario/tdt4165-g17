@@ -75,12 +75,18 @@ class Bank(val bankId: String) extends Actor {
     if (isInternal) {
       findAccount(toAccountId) match {
         case Some(a) => a ! t
-        case None => println("processTransaction: No internal account found.")
+        case None => {
+          println("processTransaction: No internal account found.")
+          // TODO: Send a receipt with failed status back to sender
+        }
       }
     } else {
       findOtherBank(toBankId) match {
         case Some(b) => b ! t
-        case None => println("processTransaction: No other bank found.")
+        case None => {
+          println("processTransaction: No other bank found.")
+          // TODO: Send a receipt with failed status back to sender
+        }
       }
     }
   }

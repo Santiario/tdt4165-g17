@@ -92,6 +92,7 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
       transactions += (t.id -> t)
       return true
     }
+
     false
   }
 
@@ -100,14 +101,17 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
 
     case TransactionRequestReceipt(to, transactionId, transaction) => {
       // Process receipt
-      ???
+      transactions(transactionId).status = transaction.status
+      transactions(transactionId).receiptReceived = true
     }
 
-    case BalanceRequest => ??? // Should return current balance
+    case BalanceRequest => sender ! balance.amount // Should return current balance
 
     case t: Transaction => {
       // Handle incoming transaction
-      ???
+      deposit(t.amount)
+      t.status = TransactionStatus.SUCCESS
+      sender ! new TransactionRequestReceipt(t.from, t.id, t)
     }
 
     case msg => ???
