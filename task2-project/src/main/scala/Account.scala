@@ -47,7 +47,7 @@ class Account(val bank: Bank, initialBalance: Double) {
 
   def transferTo(account: Account, amount: Double) = {
     // println("Account: transfering to another account")
-    bank addTransactionToQueue (this, account, amount)
+    bank addTransactionToQueue(this, account, amount)
   }
 
 }
