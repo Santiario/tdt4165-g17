@@ -14,6 +14,9 @@ case class IdentifyActor()
 
 class Bank(val bankId: String) extends Actor {
 
+  // TODO: DEBUG
+  // var hasBeenPrinted = false
+
   val accountCounter = new AtomicInteger(1000)
 
   def createAccount(initialBalance: Double): ActorRef = {
@@ -48,7 +51,14 @@ class Bank(val bankId: String) extends Actor {
       }
     } // Return account
     case IdentifyActor => sender ! this
-    case t: Transaction => processTransaction(t)
+    case t: Transaction => {
+      // TODO: DEBUG
+      // if (!hasBeenPrinted) {
+      //   println(s"Bank $bankId received transaction ${t.id}")
+      //   hasBeenPrinted = true
+      // }
+      processTransaction(t)
+    }
 
     case t: TransactionRequestReceipt => {
       // Forward receipt
@@ -72,7 +82,7 @@ class Bank(val bankId: String) extends Actor {
     
     // This method should forward Transaction t to an account or another bank, depending on the "to"-address.
     // HINT: Make use of the variables that have been defined above.
-    if (isInternal) {
+    if (isInternal || toBankId == bankId) {
       findAccount(toAccountId) match {
         case Some(a) => a ! t
         case None => {
