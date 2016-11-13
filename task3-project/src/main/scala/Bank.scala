@@ -1,9 +1,10 @@
 import java.util.NoSuchElementException
-
-import akka.actor._
 import java.util.concurrent.atomic.AtomicInteger
+
 import scala.concurrent.duration._
+
 import akka.util.Timeout
+import akka.actor._
 
 case class GetAccountRequest(accountId: String)
 
@@ -43,7 +44,7 @@ class Bank(val bankId: String) extends Actor {
     case GetAccountRequest(id) => {
       findAccount(id) match {
         case Some(a) => sender ! a
-        case None => println("receive: No internal account found.")
+        case None => println("Bank: receive: No internal account found.")
       }
     } // Return account
     case IdentifyActor => sender ! this
@@ -55,11 +56,10 @@ class Bank(val bankId: String) extends Actor {
         case Some(a) => a ! t // Internal
         case None => findOtherBank(t.transaction.from.substring(0, 4)) match {
           case Some(b) => b ! t
-          case None => println("receive: No other bank found.")
+          case None => println("Bank: receive: No other bank found.")
         } // External
       }
     }
-
     case msg => ???
   }
 

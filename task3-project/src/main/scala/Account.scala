@@ -1,6 +1,8 @@
-import akka.actor._
 import exceptions._
+
 import scala.collection.immutable.HashMap
+
+import akka.actor._
 
 case class TransactionRequest(toAccountNumber: String, amount: Double)
 
@@ -70,14 +72,12 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
   }
 
   def transferTo(accountNumber: String, amount: Double): Transaction = {
-
     val t = new Transaction(from = getFullAddress, to = accountNumber, amount = amount)
 
     if (reserveTransaction(t)) {
       try {
         withdraw(amount)
         sendTransactionToBank(t)
-
       } catch {
         case _: NoSufficientFundsException | _: IllegalAmountException =>
           t.status = TransactionStatus.FAILED
@@ -98,22 +98,18 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
 
   override def receive = {
     case IdentifyActor => sender ! this
-
     case TransactionRequestReceipt(to, transactionId, transaction) => {
       // Process receipt
       transactions(transactionId).status = transaction.status
       transactions(transactionId).receiptReceived = true
     }
-
     case BalanceRequest => sender ! balance.amount // Should return current balance
-
     case t: Transaction => {
       // Handle incoming transaction
       deposit(t.amount)
       t.status = TransactionStatus.SUCCESS
       sender ! new TransactionRequestReceipt(t.from, t.id, t)
     }
-
     case msg => ???
   }
 
