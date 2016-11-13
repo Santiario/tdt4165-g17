@@ -78,6 +78,8 @@ class Bank(val bankId: String) extends Actor {
         case None => {
           println("processTransaction: No internal account found.")
           // TODO: Send a receipt with failed status back to sender
+          t.status = TransactionStatus.FAILED
+          sender ! new TransactionRequestReceipt(t.from, t.id, t)
         }
       }
     } else {
@@ -86,6 +88,8 @@ class Bank(val bankId: String) extends Actor {
         case None => {
           println("processTransaction: No other bank found.")
           // TODO: Send a receipt with failed status back to sender
+          t.status = TransactionStatus.FAILED
+          sender ! new TransactionRequestReceipt(t.from, t.id, t)
         }
       }
     }
