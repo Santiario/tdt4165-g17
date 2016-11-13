@@ -100,8 +100,17 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
     case IdentifyActor => sender ! this
     case TransactionRequestReceipt(to, transactionId, transaction) => {
       // Process receipt
+      // TODO: DEBUG
+      // println(s"Account $accountId received transactionReceipt for ${transactionId}")
+      // println(s"\t--> amount = ${transaction.amount}")
+      // println(s"\t--> status = ${transaction.status}")
+      // println(s"\t--> receiptReceived = ${transaction.receiptReceived}")
+
       transactions(transactionId).status = transaction.status
       transactions(transactionId).receiptReceived = true
+      if (transaction.status == TransactionStatus.FAILED) {
+        this.balance.amount += transaction.amount
+      }
     }
     case BalanceRequest => sender ! balance.amount // Should return current balance
     case t: Transaction => {

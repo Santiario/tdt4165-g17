@@ -445,10 +445,13 @@ class Test16 extends FunSuite {
     TestHelper.waitUntilAllTransactionsAreCompleted(List(account1))
 
     account1.getTransactions.foreach(t => {
+      // println(s"\taccount1.isCompleted = ${t.isCompleted}")
+      // println(s"\t!account1.isSuccessful = ${!t.isSuccessful}")
       assert(t.isCompleted)
       assert(!t.isSuccessful)
     })
 
+    // println(s"\taccount1.getBalanceAmount = ${account1.getBalanceAmount}")
     assert(account1.getBalanceAmount == 1000)
 
   }
@@ -467,10 +470,13 @@ class Test17 extends FunSuite {
     TestHelper.waitUntilAllTransactionsAreCompleted(List(account1))
 
     account1.getTransactions.foreach(t => {
+      // println(s"\taccount1.isCompleted = ${t.isCompleted}")
+      // println(s"\t!account1.isSuccessful = ${!t.isSuccessful}")
       assert(t.isCompleted)
       assert(!t.isSuccessful)
     })
 
+    // println(s"\taccount1.getBalanceAmount = ${account1.getBalanceAmount}")
     assert(account1.getBalanceAmount == 1000)
 
   }
