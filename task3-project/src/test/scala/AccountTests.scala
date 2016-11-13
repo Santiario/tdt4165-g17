@@ -27,15 +27,23 @@ object TestHelper {
   }
 
   def waitUntilAllTransactionsAreCompleted(accounts: List[Account]): Unit = {
+    // println("\t--> waitUntilAllTransactionsAreCompleted ...")
+
     var completed = false
     while (!completed) {
       Thread.sleep(500)
       var completedNow = true
+      // println("\t\t--> accounts.foreach:")
       accounts.foreach(a => {
+        // println(s"\t\t\t--> ${a.bankId}${a.accountId}:")
+        // println("\t\t\t\t--> allTransactionsCompleted = " + a.allTransactionsCompleted)
+        // println("\t\t\t\t--> getBalanceAmount = " + a.getBalanceAmount)
         completedNow = completedNow && a.allTransactionsCompleted
       })
       completed = completedNow
     }
+
+    // println("\t--> waitUntilAllTransactionsAreCompleted completed!")
   }
 }
 
@@ -57,6 +65,10 @@ class Test02 extends FunSuite {
   test("Add new bank account") {
     val bank: ActorRef = BankManager.createBank("2002")
     val (accountRef, account) = TestHelper.createBankAccount("2002", 1000)
+    // println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    // println("accountId = " + account.accountId)
+    // println("accountBalance = " + account.getBalanceAmount)
+    // println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
     assert(account.accountId == "1001" && account.getBalanceAmount == 1000)
   }
 
@@ -84,13 +96,22 @@ class Test04 extends FunSuite {
     val (bank1Ref, bank1): (ActorRef, Bank) = TestHelper.createBank("2010")
     val (bank2Ref, bank2): (ActorRef, Bank) = TestHelper.createBank("2011")
 
+    // println("bank1Ref = " + bank1Ref)
+    // println("bank2Ref = " + bank2Ref)
+
     val (accountRef1, account1) = TestHelper.createBankAccount("2010", 1000)
     val (accountRef2, account2) = TestHelper.createBankAccount("2011", 1000)
+
+    // println("accountRef1 = " + accountRef1)
+    // println("accountRef2 = " + accountRef2)
 
     implicit val timeout = Timeout(5 seconds)
 
     account1.transferTo(account2.getFullAddress, 200)
     TestHelper.waitUntilAllTransactionsAreCompleted(List(account1, account2))
+
+    // println("\taccount1.getBalanceAmount = " + account1.getBalanceAmount)
+    // println("\taccount2.getBalanceAmount = " + account2.getBalanceAmount)
     assert(account1.getBalanceAmount == 800 && account2.getBalanceAmount == 1200)
 
   }
@@ -424,10 +445,13 @@ class Test16 extends FunSuite {
     TestHelper.waitUntilAllTransactionsAreCompleted(List(account1))
 
     account1.getTransactions.foreach(t => {
+      // println(s"\taccount1.isCompleted = ${t.isCompleted}")
+      // println(s"\t!account1.isSuccessful = ${!t.isSuccessful}")
       assert(t.isCompleted)
       assert(!t.isSuccessful)
     })
 
+    // println(s"\taccount1.getBalanceAmount = ${account1.getBalanceAmount}")
     assert(account1.getBalanceAmount == 1000)
 
   }
@@ -446,10 +470,13 @@ class Test17 extends FunSuite {
     TestHelper.waitUntilAllTransactionsAreCompleted(List(account1))
 
     account1.getTransactions.foreach(t => {
+      // println(s"\taccount1.isCompleted = ${t.isCompleted}")
+      // println(s"\t!account1.isSuccessful = ${!t.isSuccessful}")
       assert(t.isCompleted)
       assert(!t.isSuccessful)
     })
 
+    // println(s"\taccount1.getBalanceAmount = ${account1.getBalanceAmount}")
     assert(account1.getBalanceAmount == 1000)
 
   }
